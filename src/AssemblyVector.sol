@@ -9,7 +9,7 @@ contract AssemblyVector {
             let sum := 0
             for { let i := 0 } lt(i, mload(a) ) { i := add(i, 1) } {
                 // ai = add(a , i * 32 )
-                // cada entero demora 32 bytes
+                // cada entero ocupa 32 bytes
 
 
                 //mstore(p, v)
