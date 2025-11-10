@@ -38,18 +38,18 @@ contract AssemblyVector {
             }
             */
             let sum := 0
-            let ptr_a := next(a) // freeMemory 0x80 + a[0] 0x20 pointer
-            let ptr_b := next(b) // freeMemory 0x80 + b[0] 0x20 pointer
+            let ptr_a := add(a, 0x20) // freeMemory 0x80 + a[0] 0x20 pointer
+            let ptr_b := add(b, 0x20) // freeMemory 0x80 + b[0] 0x20 pointer
 
             for { let i := 0 } lt(i, mload(a)) { i := add(i, 1) } {
                 let a_i := mload(ptr_a)
                 let b_i := mload(ptr_b)
 
                 sum := add(sum, mul(a_i, b_i))
-                debug(a_i, b_i, sum, i)
+                //debug(a_i, b_i, sum, i)
 
-                ptr_a := next(ptr_a)
-                ptr_b := next(ptr_b)
+                ptr_a := add(ptr_a, 0x20)
+                ptr_b := add(ptr_b, 0x20)
             }
             result := sum
         }
