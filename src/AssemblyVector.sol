@@ -25,6 +25,15 @@ contract AssemblyVector {
     function dotProductEfficient(uint[] memory a, uint[] memory b) external returns (uint result) {
         require(a.length == b.length, "Arrays must have same length");
         assembly {
+
+            /*
+            function debug(a_val, b_val, sum_val, ptr) {
+                mstore(0x00, a_val)
+                mstore(0x20, b_val)
+                mstore(0x40, sum_val)
+                log2(0x00, 0x60, 0xf3ee2bbb0b9b66cf7c48e59107dadde90e37dd99b20f2fcc50b1a8929b659910, ptr)
+            }
+            */
             let sum := 0
             let ptr_a := add(a, 0x20) // freeMemory 0x80 + a[0] 0x20 pointer
             let ptr_b := add(b, 0x20) // freeMemory 0x80 + b[0] 0x20 pointer
@@ -43,33 +52,24 @@ contract AssemblyVector {
         }
     }
 
-    function dotProductMinimal(uint[] memory a, uint[] memory b) external returns (uint result) {
+    function dotProductMoreEfficient(uint[] memory a, uint[] memory b) external returns (uint result) {
         require(a.length == b.length, "Arrays must have same length");
-        assembly{
-            /*function debug(a_val, b_val, sum_val, ptr) {
-                mstore(0x00, a_val)
-                mstore(0x20, b_val)
-                mstore(0x40, sum_val)
-                log2(0x00, 0x60, 0xf3ee2bbb0b9b66cf7c48e59107dadde90e37dd99b20f2fcc50b1a8929b659910, ptr)
-            }
-            */
 
+        assembly {
             let sum := 0
+            let len := mload(a)
             let ptr_a := add(a, 0x20)
             let ptr_b := add(b, 0x20)
 
-            for { let i := 0 } lt(i, mload(a)) { i := add(i, 1) } {
-                let a_val := mload(ptr_a)
-                let b_val := mload(ptr_b)
-
-                sum := add(sum, mul(a_val, b_val))
+            let end := add(ptr_a, shl(5, len)) // mul(len, 32)
+            for {} lt(ptr_a, end) {} {
+                sum := add(sum, mul(mload(ptr_a), mload(ptr_b)))
 
                 ptr_a := add(ptr_a, 0x20)
                 ptr_b := add(ptr_b, 0x20)
             }
             result := sum
         }
-
     }
 }
 
